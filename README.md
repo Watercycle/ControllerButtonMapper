@@ -26,7 +26,7 @@ confusing program in the first place!
 
 # Binding Language Example (with syntax highlighting)
 
-![alt text](https://drive.google.com/file/d/0BzkD1zMOo6TRT0dnVnJoOHdwUEU/view?usp=sharing "Simple Binding Syntax")
+![alt text](blob:https%3A//drive.google.com/e776cc7f-b419-4493-8ba8-838819beccb9 "Simple Binding Syntax")
 (The Notepad++ language theme is included in the settings folder)
 
 You might be wondering why L1 and R1 are red.  That's because they're user defined.  Controllers have mostly the same buttons,
