@@ -37,11 +37,8 @@ controllers that do not already have a mapping (like the xbox-one file).
 
 # Dependencies
 
-I am not a big fan of Microsoft's DirectInput even though it is very well made.  So, to save a little time, this project uses SFML's 
-JoyStick API, and thus will need to be compiled as well.  The temporarily included version is a Windows 10 64-bit distribution.  Ideally
-the SFML dependency will be dropped in the near future.
+I am not fully aware of the Windows and Linux API calls necessary and how compatible each of them are.  So, to save a little time, this project uses SFML's JoyStick API, and thus SFML will need to be compiled as well.  The temporarily included version is a Windows 10 64-bit distribution.  Ideally the SFML dependency will be dropped in the future.
 
 # Building
 
-This will only compile on MSVC right now.  The enum library (enum.h) for this program needs some compatibility work since it turns out GCC
-is a little stricter than expected.
+This will only compile on MSVC right now.  The enum library (enum.h) for this program needs some compatibility work since it turns out GCC is a little stricter than expected.
