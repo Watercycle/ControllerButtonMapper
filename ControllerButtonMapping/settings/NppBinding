@@ -1,0 +1,64 @@
+<NotepadPlus>
+    <UserLang name="Binding" ext=".bind" udlVersion="2.1">
+        <Settings>
+            <Global caseIgnored="no" allowFoldOfComments="no" foldCompact="no" forcePureLC="2" decimalSeparator="0" />
+            <Prefix Keywords1="no" Keywords2="no" Keywords3="no" Keywords4="no" Keywords5="no" Keywords6="no" Keywords7="no" Keywords8="no" />
+        </Settings>
+        <KeywordLists>
+            <Keywords name="Comments">00-- 01 02 03 04</Keywords>
+            <Keywords name="Numbers, prefix1"></Keywords>
+            <Keywords name="Numbers, prefix2"></Keywords>
+            <Keywords name="Numbers, extras1"></Keywords>
+            <Keywords name="Numbers, extras2"></Keywords>
+            <Keywords name="Numbers, suffix1"></Keywords>
+            <Keywords name="Numbers, suffix2"></Keywords>
+            <Keywords name="Numbers, range"></Keywords>
+            <Keywords name="Operators1"></Keywords>
+            <Keywords name="Operators2"></Keywords>
+            <Keywords name="Folders in code1, open"></Keywords>
+            <Keywords name="Folders in code1, middle"></Keywords>
+            <Keywords name="Folders in code1, close"></Keywords>
+            <Keywords name="Folders in code2, open"></Keywords>
+            <Keywords name="Folders in code2, middle"></Keywords>
+            <Keywords name="Folders in code2, close"></Keywords>
+            <Keywords name="Folders in comment, open"></Keywords>
+            <Keywords name="Folders in comment, middle"></Keywords>
+            <Keywords name="Folders in comment, close"></Keywords>
+            <Keywords name="Keywords1">bind: &#x000D;&#x000A;to:&#x000D;&#x000A;+</Keywords>
+            <Keywords name="Keywords2">Hold &#x000D;&#x000A;Press &#x000D;&#x000A;Release</Keywords>
+            <Keywords name="Keywords3">DPadUp&#x000D;&#x000A;DPadRight&#x000D;&#x000A;DPadDown&#x000D;&#x000A;DPadLeft&#x000D;&#x000A;LeftStickUp&#x000D;&#x000A;LeftStickRight&#x000D;&#x000A;LeftStickDown&#x000D;&#x000A;LeftStickLeft&#x000D;&#x000A;LeftStickUpHard&#x000D;&#x000A;LeftStickRightHard&#x000D;&#x000A;LeftStickDownHard&#x000D;&#x000A;LeftStickLeftHard,&#x000D;&#x000A;RightStickUp&#x000D;&#x000A;RightStickRight&#x000D;&#x000A;RightStickDown&#x000D;&#x000A;RightStickLeft&#x000D;&#x000A;RightStickUpHard&#x000D;&#x000A;RightStickRightHard&#x000D;&#x000A;RightStickDownHard&#x000D;&#x000A;RightStickLeftHard&#x000D;&#x000A;LeftTrigger&#x000D;&#x000A;LeftTriggerHard,&#x000D;&#x000A;RightTrigger&#x000D;&#x000A;RightTriggerHard</Keywords>
+            <Keywords name="Keywords4">MouseLeft &#x000A;MouseRight &#x000A;MouseScrollWheel &#x000A;MouseXButton1 &#x000A;MouseXButton2 &#x000A;F1 &#x000A;F2 &#x000A;F3 &#x000A;F4 &#x000A;F5 &#x000A;F6 &#x000A;F7 &#x000A;F8 &#x000A;F9 &#x000A;F10 &#x000A;F11 &#x000A;F12 &#x000A;F13 &#x000A;F14 &#x000A;F15 &#x000A;Num0 &#x000A;Num1 &#x000A;Num2 &#x000A;Num3 &#x000A;Num4 &#x000A;Num5 &#x000A;Num6 &#x000A;Num7 &#x000A;Num8 &#x000A;Num9 &#x000A;Up &#x000A;Down &#x000A;Left &#x000A;Right &#x000A;OpenBracket &#x000A;CloseBracket &#x000A;PageUp &#x000A;PageDown &#x000A;Slash &#x000A;Backslash &#x000A;Space &#x000A;Backspace &#x000A;Enter &#x000A;Insert &#x000A;Delete &#x000A;Shift &#x000A;Alt &#x000A;Control &#x000A;PrintScreen &#x000A;Clear &#x000A;Home &#x000A;Pause &#x000A;End &#x000A;Escape &#x000A;Tab &#x000A;CapsLock &#x000A;Tilde &#x000A;Dash &#x000A;Equal &#x000A;Fn &#x000A;Cmd &#x000A;Comma &#x000A;Colon &#x000A;Period &#x000A;Quote &#x000A;A &#x000A;B &#x000A;C &#x000A;D &#x000A;E &#x000A;F &#x000A;G &#x000A;H &#x000A;I &#x000A;J &#x000A;K &#x000A;L &#x000A;M &#x000A;N &#x000A;O &#x000A;P &#x000A;Q &#x000A;R &#x000A;S &#x000A;T &#x000A;U &#x000A;V &#x000A;W &#x000A;X &#x000A;Y &#x000A;Z &#x000A;Numpad0 &#x000A;Numpad1 &#x000A;Numpad2 &#x000A;Numpad3 &#x000A;Numpad4 &#x000A;Numpad5 &#x000A;Numpad6 &#x000A;Numpad7 &#x000A;Numpad8 &#x000A;Numpad9 &#x000A;NumLock &#x000A;Add &#x000A;Decimal &#x000A;Divide &#x000A;Multiply &#x000A;Subtract NumpadEnter</Keywords>
+            <Keywords name="Keywords5"></Keywords>
+            <Keywords name="Keywords6"></Keywords>
+            <Keywords name="Keywords7"></Keywords>
+            <Keywords name="Keywords8"></Keywords>
+            <Keywords name="Delimiters"></Keywords>
+        </KeywordLists>
+        <Styles>
+            <WordsStyle name="DEFAULT" fgColor="FF0000" bgColor="FFFFFF" fontName="Comic Sans MS" fontStyle="0" fontSize="12" nesting="0" />
+            <WordsStyle name="COMMENTS" fgColor="000000" bgColor="FFFFFF" fontStyle="0" nesting="0" />
+            <WordsStyle name="LINE COMMENTS" fgColor="4AB54A" bgColor="FFFFFF" fontName="Comic Sans MS" fontStyle="0" fontSize="11" nesting="0" />
+            <WordsStyle name="NUMBERS" fgColor="000000" bgColor="FFFFFF" fontStyle="0" nesting="0" />
+            <WordsStyle name="KEYWORDS1" fgColor="0000FF" bgColor="FFFFFF" fontName="Comic Sans MS" fontStyle="0" fontSize="12" nesting="0" />
+            <WordsStyle name="KEYWORDS2" fgColor="000000" bgColor="FFFFFF" fontName="Comic Sans MS" fontStyle="0" fontSize="12" nesting="0" />
+            <WordsStyle name="KEYWORDS3" fgColor="958300" bgColor="FFFFFF" fontName="Comic Sans MS" fontStyle="2" fontSize="12" nesting="0" />
+            <WordsStyle name="KEYWORDS4" fgColor="8C8C00" bgColor="FFFFFF" fontName="Comic Sans MS" fontStyle="2" fontSize="12" nesting="0" />
+            <WordsStyle name="KEYWORDS5" fgColor="000000" bgColor="FFFFFF" fontStyle="0" nesting="0" />
+            <WordsStyle name="KEYWORDS6" fgColor="000000" bgColor="FFFFFF" fontStyle="0" nesting="0" />
+            <WordsStyle name="KEYWORDS7" fgColor="000000" bgColor="FFFFFF" fontStyle="0" nesting="0" />
+            <WordsStyle name="KEYWORDS8" fgColor="000000" bgColor="FFFFFF" fontStyle="0" nesting="0" />
+            <WordsStyle name="OPERATORS" fgColor="000000" bgColor="FFFFFF" fontStyle="0" nesting="0" />
+            <WordsStyle name="FOLDER IN CODE1" fgColor="000000" bgColor="FFFFFF" fontStyle="0" nesting="0" />
+            <WordsStyle name="FOLDER IN CODE2" fgColor="000000" bgColor="FFFFFF" fontStyle="0" nesting="0" />
+            <WordsStyle name="FOLDER IN COMMENT" fgColor="000000" bgColor="FFFFFF" fontStyle="0" nesting="0" />
+            <WordsStyle name="DELIMITERS1" fgColor="000000" bgColor="FFFFFF" fontStyle="0" nesting="0" />
+            <WordsStyle name="DELIMITERS2" fgColor="000000" bgColor="FFFFFF" fontStyle="0" nesting="0" />
+            <WordsStyle name="DELIMITERS3" fgColor="000000" bgColor="FFFFFF" fontStyle="0" nesting="0" />
+            <WordsStyle name="DELIMITERS4" fgColor="000000" bgColor="FFFFFF" fontStyle="0" nesting="0" />
+            <WordsStyle name="DELIMITERS5" fgColor="000000" bgColor="FFFFFF" fontStyle="0" nesting="0" />
+            <WordsStyle name="DELIMITERS6" fgColor="000000" bgColor="FFFFFF" fontStyle="0" nesting="0" />
+            <WordsStyle name="DELIMITERS7" fgColor="000000" bgColor="FFFFFF" fontStyle="0" nesting="0" />
+            <WordsStyle name="DELIMITERS8" fgColor="000000" bgColor="FFFFFF" fontStyle="0" nesting="0" />
+        </Styles>
+    </UserLang>
+</NotepadPlus>

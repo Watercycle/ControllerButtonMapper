@@ -1,0 +1,13 @@
+poll-frequency = 20
+auto-reconnect-frequency = 500
+button-press-and-release-time = 50
+stick-soft = 0.4
+stick-hard = 0.9
+leftstick-using-acceleration = false
+leftstick-sensitivity = 3.2
+leftstick-deadzone = 0.03
+rightstick-using-acceleration = true
+rightstick-sensitivity = 25
+rightstick-deadzone = 0.03
+trigger-soft = 0.3
+trigger-hard = 0.9

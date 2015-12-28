@@ -1,0 +1,44 @@
+{
+  "poll-frequency": 20,
+  "auto-reconnect-frequency": 500,
+  "mappings": [
+    {"bind": ["press: a"], "to": ["hold: mouse-left"]},
+    {"bind": ["release: a"], "to": ["release: mouse-left"]},
+    {"bind": ["hold: lbumper, rbumper, lstick, rstick"], "to": ["press: ALT, F4"]},
+    {"bind": ["press: ltrigger-pull"], "to": ["press: mouse-right"]},
+    {"bind": ["release: b"], "to": ["release: mouse-right"]}
+  ],
+
+  "bindings": {
+    "a": 0,
+    "b": 1,
+    "y": 3,
+    "x": 2,
+    "back": 6,
+    "start": 7,
+    "lbumper": 4,
+    "rbumper": 5,
+    "lstick": 8,
+    "rstick": 9
+  },
+  
+  "move-stick": {
+    "sensitivity": 0.1,
+    "radius": 100,
+    "dead-zone": 0.03
+  },
+  
+  "look-stick": {
+    "sensitivity": 0.1,
+    "radius": 100,
+    "dead-zone": 0.03
+  },
+  
+  "triggers": {
+    "threshold": 0.01
+  },
+  
+  "dpad": {
+    "threshold": 0.5
+  }
+}
