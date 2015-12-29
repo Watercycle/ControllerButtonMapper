@@ -3,6 +3,23 @@
 #include <unordered_map>
 #include <unordered_set>
 
+CREATE_GLOBAL_ENUM(SettingType,
+    DefaultBindingPath, MappingPath,
+
+    MousePrimaryStick,
+    UseControlStickScrolling,
+    ButtonPressAndReleaseTime,
+    StickSoftThreshold,
+    StickHardThreshold,
+    LeftStickUsingAcceleration,
+    LeftStickSensitivity,
+    LeftStickDeadzone,
+    rightStickUsingAcceleration,
+    RightStickSensitivity,
+    RightStickDeadzone,
+    TriggerSoftThreshold,
+    TriggerHardThreshold)
+
 CREATE_GLOBAL_ENUM(Direction,
     Up, Right, Down, Left)
 

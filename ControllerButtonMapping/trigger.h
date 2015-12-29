@@ -14,7 +14,7 @@ public:
 public:
     Trigger(sf::Joystick::Axis button, Controller* controller, const AxisType& name);
     void update() override;
-    void updateSettings(unordered_map<string, string>& settings) override;
+    void updateSettings(unordered_map<SettingType, string>& settings) override;
     void setupVirtualButtons() override;
     float getThreshold() override;
 };

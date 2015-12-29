@@ -17,6 +17,6 @@ public:
     void update() override;
     bool inRegion(const Direction& targetRegion) const override;
     float getThreshold() override;
-    void updateSettings(unordered_map<string, string>& settings) override;
+    void updateSettings(unordered_map<SettingType, string>& settings) override;
     void setupVirtualButtons() override;
 }; 

@@ -21,10 +21,10 @@ float Trigger::getThreshold()
 }
 
 
-void Trigger::updateSettings(unordered_map<string, string>& settings)
+void Trigger::updateSettings(unordered_map<SettingType, string>& settings)
 {
-    softThreshold = stof(settings["trigger-soft"]);
-    hardThreshold = stof(settings["trigger-hard"]);
+    softThreshold = stof(settings[SettingType::TriggerSoftThreshold]);
+    hardThreshold = stof(settings[SettingType::TriggerHardThreshold]);
 }
 
 void Trigger::setupVirtualButtons()

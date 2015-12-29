@@ -18,8 +18,10 @@ class Controller
 {
 public:
     unsigned id = 0;
-	abool connected = false;
-	abool keepPollingThreadsAlive = false;
+    abool connected = false;
+	abool keepPollingThreadsAlive = true;
+    abool keepBindingThreadsAlive = true;
+    abool keepAxisPollingThreadAlive = true;
 
     int buttonCount = 0;
     int stickCount = 0;
@@ -28,7 +30,11 @@ public:
 
     unordered_map<ButtonType, shared_ptr<Button>> buttons;
     vector<shared_ptr<Axis>> axes;
+
+    unordered_map<SettingType, string> appSettings;
+    unordered_map<SettingType, string> settings; // controlelr settings
     unordered_map<string, string> userButtonNameToId;
+    unordered_map<string, string> userApplicationList;
     vector<unique_ptr<Binding>> keyBindings;
 
     // kept for reading real-time input. will be a nullptr if not supported by the controller.
@@ -37,10 +43,8 @@ public:
     shared_ptr<Trigger> leftTrigger;
     shared_ptr<Trigger> rightTrigger;
 
-    unordered_map<string, string> settings;
-
 	thread mainPollingThread;
-	thread axisUpdateThread;
+	thread backgroundPollingThread;
 	thread bindingsUpdateThread;
 
 public:
@@ -57,10 +61,12 @@ public:
     shared_ptr<DPad> setupDPad(const AxisType& name, sf::Joystick::Axis leftRight, sf::Joystick::Axis upDown);
     shared_ptr<Trigger> setupTrigger(const AxisType& name, sf::Joystick::Axis trigger);
     
-    void initializeKeyMappingsFromMappingFile(const string& filename);
-    void initializeKeyBindingsFromBindingFile(const string& filename);
-    void initializeSettingsFromConfigFile(const string& filename);
+    void reinitializeSettingsAndBindings(const string& bindingFile);
+    void initializeKeyMappingsFromMappingFile(unordered_map<string, string>& map, const string& filename);
+    void initializeKeyBindingsFromBindingFile(const string& filename, bool firstCall);
+    void initializeKeyMappingsFromMappingFile(unordered_map<SettingType, string>& map, const string& filename);
 
+    void runBackgroundTasks();
     void updateAxes();
     void updateBindings();
 

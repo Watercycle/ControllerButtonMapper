@@ -1,43 +1,147 @@
--- CLOSE THE APP --
-bind: Hold L1 R1 + Release A
-to: Press ALT F4
+Settings:
 
--- LEFT CLICK -- 
+-- Options are 'LeftStick, RightStick, None'.T his is the stick that controls the mouse.
+MousePrimaryStick = LeftStick
+
+-- Used with MouseControlStick.  When set to true the second stick will be used for scrolling
+UseControlStickScrolling = true
+
+-- Typically 0.01 - 0.40.  A percent of how far the stick must be moved before triggering the button.
+StickSoftThreshold = 0.4
+
+-- Typically 0.70 - 0.99.   Same as above except for more decesive stick actions.
+StickHardThreshold = 0.9
+
+-- 'true' or 'false'.  If marked as true stick to mouse movements will speed up exponentially.
+-- This is useful on the desktop because you will get more percision.  A majority of FPS games
+-- feel better when acceleration is turned off.
+LeftStickUsingAcceleration = true
+
+-- Typically 0.1 - 5.  Determines how sensitive the stick to mouse movements are.
+LeftStickSensitivity = 0.25
+
+-- Typically 0.01 - 0.15.  Used to prevent 'ghost input' from poorly made controller sticks.
+-- Increase this value if the mouse moves accross the screen on its own.
+LeftStickDeadzone = 0.03
+
+RightStickUsingAcceleration = false
+RightStickSensitivity = 25
+RightStickDeadzone = 0.03
+TriggerSoftThreshold = 0.1
+TriggerHardThreshold = 0.99
+
+Bindings:
+
+-- CLOSE A PROGRAM --
+bind: Hold L1 R1 + Press A
+to: Press Alt F4
+
+--------------------------------------
+--           Switch Windows
+--------------------------------------
+
+-- WINDOWS ALT MENU--
+bind: Press L1 R1
+to: Hold Alt
+
+-- Releasing either of these should free the windows key.
+bind: Release L1
+to: Release Alt
+
+bind: Release R1
+to: Release Alt
+
+-- go to next item
+bind: Hold L1 R1 + Press DPadRight
+to: Press Tab
+
+-- go to previous item
+bind: Hold L1 R1 + Press DPadLeft
+to: Press Shift Tab
+
+--------------------------------------
+--           Navigate Folders
+--------------------------------------
+
+-- NAVIGATE FOLDERS --
+bind: Hold L1 + Press DPadUp
+to: Press Alt Up
+
+--------------------------------------
+--           Navigate Browser
+--------------------------------------
+
+-- NEXT TAB --
+-- gets used with control
+bind: Hold L1 + Press DPadRight
+to: Press Control Tab
+
+-- PREVIOUS TAB --
+-- gets used with control
+bind: Hold L1 + Press DPadLeft
+to: Press Control Shift Tab
+
+-- NEXT PAGE --
+-- gets used with control
+bind: Hold L1 + Press DPadDown
+to: Press Alt Right
+
+-- PREVIOUS PAGE --
+-- gets used with control
+bind: Hold L1 + Press DPadUp
+to: Press Alt Left
+
+--------------------------------------
+--           Basic                       --
+--------------------------------------
+	 
+-- BASIC CONTROLS --
+bind: Press A
+to: Press Enter
+
+bind Hold B
+to: Hold Backspace
+
+bind: Press X
+to: Press Space
+
+--  LEFT CLICK --
 bind: Press RightTrigger
 to: Hold MouseLeft
 
-bind: Release RightTrigger
+bind: Release RightTrigger 
 to: Release MouseLeft
 
 -- RIGHT CLICK --
 bind: Press LeftTrigger
-to: Press MouseRight
+to: Hold MouseRight
 
--- WASD --
-bind: Press RightStickUp
-to: Hold P
+bind: Release LeftTrigger
+to: Release MouseRight
 
-bind: Release RightStickUp
-to: release p
+-- ARROWS --
+bind: Hold DPadUp
+to: Hold Up
 
-bind: Press RightStickRight
-to: Hold Quote
+bind: Hold DPadRight
+to: Hold Right
 
-bind: Release RightStickRight
-to: Release Quote
+bind: Hold DPadDown
+to: Hold Down
 
-bind: Press RightStickLeft
-to: Hold L
+bind: Hold DPadLeft
+to: Hold Left
 
-bind: Release RightStickLeft
-to: Release L
+-- WINDOWS BUTTON --
+bind: Press START
+to: Hold Cmd
 
-bind: Press RightStickDown
-to: Hold Colon
+bind: Release START
+to: Release Cmd
 
-bind: Release RightStickDown
-to: Release Colon
+-- CTRL --
+bind: Press RSTICK
+to: Hold Control
 
--- WINDOWS --
--- bind: Press LeftTrigger
--- to: Hold Cmd
+bind: Release RSTICK
+to: Release Control

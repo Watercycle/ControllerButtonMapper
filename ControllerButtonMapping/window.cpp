@@ -3,38 +3,6 @@
 #include <windows.h>
 #include <Psapi.h>
 
-Window::Window(unordered_set<wstring> ignoreFullscreenPrograms) 
-	: isFullscreen(false), running(true), ignoredFullscreenPrograms(ignoredFullscreenPrograms)
-{
-}
-
-Window::~Window()
-{
-	running = false;
-	poller.join();
-}
-
-void Window::beginPolling(unsigned pollFrequency)
-{
-	poller = thread([&] {
-		while (running)
-		{
-			this_thread::sleep_for(milliseconds(pollFrequency));
-			wstring topWindowExeName = GetTopWindowExecutableName();
-			if (ignoredFullscreenPrograms.find(topWindowExeName) == ignoredFullscreenPrograms.end())
-			{
-				isFullscreen = TopWindowIsFullscreen();
-			}
-		}
-	});
-}
-
-bool Window::topWindowIsFullscreen() const
-{
-	return isFullscreen;
-}
-
-
 bool Window::TopWindowIsFullscreen()
 {
 	const auto fgWindow = GetForegroundWindow();

@@ -1,3 +1,2 @@
-bindings = default.bind
-options = default.txt
-mappings = xbox-one.txt
+DefaultBindingPath = default.bind
+MappingPath = xbox-one.txt

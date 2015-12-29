@@ -21,9 +21,9 @@ bool DPad::inRegion(const Direction& targetRegion) const
 	bool lowerRight = state.y > -state.x;
 
 	Direction region;
-	if (lowerLeft && lowerRight) region = Direction::Down;
+	if (lowerLeft && lowerRight) region = Direction::Up;
 	else if (lowerLeft && !lowerRight) region = Direction::Left;
-	else if (!lowerLeft && !lowerRight) region = Direction::Up;
+	else if (!lowerLeft && !lowerRight) region = Direction::Down;
 	else region = Direction::Right;
 
 	return region == targetRegion;
@@ -34,7 +34,7 @@ float DPad::getThreshold()
     return state.lengthSquared();
 }
 
-void DPad::updateSettings(unordered_map<string, string>& settings)
+void DPad::updateSettings(unordered_map<SettingType, string>& settings)
 {
     threshold = 0.5;
 }

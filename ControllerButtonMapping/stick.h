@@ -23,7 +23,7 @@ public:
     void update() override;
     float getThreshold() override;
     bool Stick::inRegion(const Direction& targetRegion) const override;
-    void updateSettings(unordered_map<string, string>& settings) override;
+    void updateSettings(unordered_map<SettingType, string>& settings) override;
     void setupVirtualButtons() override;
 
 

@@ -15,9 +15,9 @@
 // TODO: reference additional headers your program requires here
 
 #include <iostream>
-#include <algorithm>
 #include <mutex>
 #include <functional>
+#include <algorithm>
 #include <string>
 #include "vec2.h"
 #include "SFML/Window.hpp"
@@ -67,6 +67,8 @@ namespace util
     float scale(float val, float oldMin, float oldMax, float newMin, float newMax);
     float normalize(float val);
     vec2 lerp(vec2 start, vec2 end, float percent);
+    string toString(const std::wstring& wstr);
+    string trim(string str);
 
 
     template <typename T>

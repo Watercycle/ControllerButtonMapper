@@ -1,0 +1,64 @@
+-- Bindings for the game "Wurm Online"  / "Wurm Unlimited".  It's a laid back first person sandbox game!
+
+Settings:
+MousePrimaryStick = LeftStick
+UseControlStickScrolling = true
+StickSoftThreshold = 0.4
+StickHardThreshold = 0.9
+LeftStickUsingAcceleration = false
+LeftStickSensitivity = 0.25
+LeftStickDeadzone = 0.03
+RightStickUsingAcceleration = false
+RightStickSensitivity = 25
+RightStickDeadzone = 0.03
+TriggerSoftThreshold = 0.1
+TriggerHardThreshold = 0.99
+
+Bindings:
+
+-- CLOSE THE APP --
+bind: Hold L1 R1 + Release A
+to: Press Alt F4 
+
+-- DOUBLE CLICK --
+bind: Press RightTrigger
+to: Hold MouseLeft
+
+bind: Release RightTrigger 
+to: Release MouseLeft
+
+-- RIGHT CLICK --
+bind: Press LeftTrigger
+to: Hold MouseRight
+
+bind: Release LeftTrigger
+to: Release MouseRight
+
+-- WASD --
+bind: Press RightStickUp
+to: Hold P
+
+bind: Release RightStickUp
+to: Release P
+
+bind: Press RightStickRight
+to: Hold Quote
+
+bind: Release RightStickRight
+to: Release Quote
+
+bind: Press RightStickLeft
+to: Hold L
+
+bind: Release RightStickLeft
+to: Release L
+
+bind: Press RightStickDown
+to: Hold Colon
+
+bind: Release RightStickDown
+to: Release Colon
+
+-- BACKSPACE --
+bind Hold B
+to: Hold Backspace

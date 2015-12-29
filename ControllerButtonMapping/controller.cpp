@@ -8,6 +8,7 @@
 #include "stick.h"
 #include "binding_enums.h"
 #include "physical_button.h"
+#include "window.h"
 
 Controller::~Controller()
 {
@@ -67,7 +68,10 @@ void Controller::disconnect()
 {
     connected = false;
     keepPollingThreadsAlive = false;
+    keepBindingThreadsAlive = false;
+    keepAxisPollingThreadAlive = false;
 
+    backgroundPollingThread.join();
     mainPollingThread.join();
     bindingsUpdateThread.join();
 
@@ -95,38 +99,92 @@ void Controller::setupAxes()
 void Controller::connect(unsigned controllerId)
 {
     id = controllerId;
-    cout << "Loading the settings..." << endl;
 
-    initializeSettingsFromConfigFile("settings/config.txt");
-    initializeSettingsFromConfigFile("settings/options/" + settings["options"]);
-    initializeKeyMappingsFromMappingFile("settings/mappings/" + settings["mappings"]);
+    initializeKeyMappingsFromMappingFile(appSettings, "settings/config.txt");
+    initializeKeyMappingsFromMappingFile(userButtonNameToId, "settings/mappings/" + appSettings[SettingType::MappingPath]);
+    initializeKeyMappingsFromMappingFile(userApplicationList, "settings/app-binding-list.txt");
 
-	cout << "Finished loading settings!" << endl;
-
-    cout << "Connecting for the first time..." << endl;
-    sf::Joystick::update();
-    while (!sf::Joystick::isConnected(id))
-    {
-        cout << "Still trying to connect..." << endl;
-        wait(stof(settings["auto-reconnect-frequency"]));
-        sf::Joystick::update();
-    }
-	cout << "Connected to controller!\n";
-
-	cout << "Preparing the controller..." << endl;
-	setupAxes();
-    initializeKeyBindingsFromBindingFile("settings/bindings/" + settings["bindings"]);
-	cout << "Controller is ready to go!" << endl;
-
-	cout << "Beginning to poll controller." << endl;
-	connected = true;
-
-    keepPollingThreadsAlive = true;
+    backgroundPollingThread = thread([&] { runBackgroundTasks(); });
     mainPollingThread = thread([&] { updateAxes(); });
     bindingsUpdateThread = thread([&] { updateBindings(); });
 
+    // wait for all of the threads to terminate
+    backgroundPollingThread.join();
 	mainPollingThread.join();
 	bindingsUpdateThread.join();
+}
+
+void Controller::reinitializeSettingsAndBindings(const string& bindingFile)
+{
+    keepBindingThreadsAlive = false;
+    keepAxisPollingThreadAlive = false;
+    bindingsUpdateThread.join();
+    mainPollingThread.join();
+
+    buttons.clear();
+    settings.clear();
+    keyBindings.clear();
+
+    initializeKeyBindingsFromBindingFile("settings/bindings/" + bindingFile,  true);
+    keepBindingThreadsAlive = true;
+    keepAxisPollingThreadAlive = true;
+    mainPollingThread = thread([&] { updateAxes(); });
+    bindingsUpdateThread = thread([&] { updateBindings(); });
+}
+
+string currentBinding;
+wstring topWindowName;
+void Controller::runBackgroundTasks()
+{
+    while (keepPollingThreadsAlive)
+    {
+        wstring newTopWindowName = Window::GetTopWindowExecutableName();
+        if (topWindowName != newTopWindowName)
+        {
+            const string withoutExe = util::toLower(util::toString(newTopWindowName));
+            cout << "now using '" << withoutExe << "'" << endl;
+
+            if (userApplicationList.count(withoutExe))
+            {
+                const string newBindingToUse = userApplicationList[withoutExe];
+                cout << "Reinitializing settings for '" << withoutExe << "'.  Switching from '" 
+                    << currentBinding << "' to '" << newBindingToUse << "'." << endl;
+                currentBinding = newBindingToUse;
+                reinitializeSettingsAndBindings(newBindingToUse);
+            }
+            else
+            {
+                if (currentBinding != "default.bind")
+                {
+                    cout << "Reverting to default bindings" << endl;
+                    reinitializeSettingsAndBindings("default.bind");
+                    currentBinding = "default.bind";
+                }
+            }
+        }
+
+        topWindowName = newTopWindowName;
+
+        wait(500);
+    }
+}
+
+void Controller::initializeKeyMappingsFromMappingFile(unordered_map<SettingType, string>& map, const string& filename)
+{
+
+    // load the general controller settings
+    ifstream configFile(filename);
+    for (std::string line; getline(configFile, line); )
+    {
+        // skip empty lines and comments
+        if (line.substr(0, 2) == "--" || line.empty()) continue;
+
+        auto tokens = util::split(line, '=');
+        SettingType setting = SettingType::from(util::removeSpaces(tokens[0]));
+        const string value = util::toLower(util::removeSpaces(tokens[1]));
+
+        map[setting] = value;
+    }
 }
 
 void Controller::connectToFirstAvaialblePort()
@@ -155,26 +213,70 @@ bool Controller::isConnected() const
 	return connected;
 }
 
+vec2 mouseCurrentPos;
+vec2 mouseTargetPos; // relative to the cursor position
+vec2 accumulator;
+
+void controlCursor(const shared_ptr<Stick> primary, const shared_ptr<Stick> secondary)
+{
+    if (primary == nullptr) return;
+
+    // There actual position doesn't matter so much as how the 'current' vector approaches
+    // the 'target vector'
+    mouseTargetPos += primary->state * primary->sensitivity * 20;
+    mouseCurrentPos = util::lerp(mouseCurrentPos, mouseTargetPos, 0.75f);
+    const vec2 change = mouseTargetPos - mouseCurrentPos;
+
+    // movement was too small to be recognized, so we accumulate it
+    if (fabs(change.x) < 0.5f) accumulator.x += change.x;
+    if (fabs(change.y) < 0.5f) accumulator.y += change.y;
+
+    // If the value is too small to be recognized ( < 0.5 ) then the position will remain the same
+    SetCursorPos(GetCursorPos() + change);
+    SetCursorPos(GetCursorPos() + accumulator);
+
+    // once the accumulator has been used, reset it for the next accumulation.
+    if (fabs(accumulator.x) >= 0.5f) accumulator.x = 0;
+    if (fabs(accumulator.y) >= 0.5f) accumulator.y = 0;
+
+    if (secondary == nullptr) return;
+
+    SimulateMouseScroll(secondary->state.y * secondary->sensitivity * -2.0f, true);
+    SimulateMouseScroll(secondary->state.x * secondary->sensitivity * 2.0f, false);
+}
+
 void Controller::updateAxes()
 {
-    const float controllerReconnectFrequency = stof(settings["auto-reconnect-frequency"]);
-    const float pollFrequency = stof(settings["poll-frequency"]);
+    bool test = 1;
+    const float controllerReconnectFrequency = 200;
+    const float pollFrequency = 10;
+
+    shared_ptr<Stick> primary = nullptr;
+    shared_ptr<Stick> secondary = nullptr;
+    string stickSetting = settings[SettingType::MousePrimaryStick];
+    bool usingScrolling = settings[SettingType::UseControlStickScrolling] == "true" ? true : false;
+
+    if (stickSetting == "leftstick")
+    {
+        primary = leftStick;
+        if (usingScrolling) secondary = rightStick;
+    }
+    else if (stickSetting == "rightstick")
+    {
+        primary = rightStick;
+        if (usingScrolling) secondary = leftStick;
+    }
+    
+
 
     wait(100); // give the cursor a little time to pick up.
 
-    vec2 mouseLocalOffset;
-    vec2 mouseLocalTargetPos; // relative to the cursor position
-    vec2 accumulator;
-
-    vec2 screenSize = GetTotalScreenSize();
-
-
-    while (keepPollingThreadsAlive)
+    while (keepAxisPollingThreadAlive)
     {
 		// Check whether the controller is connected
 		// ===============================================
 
-		sf::Joystick::update();
+        sf::Joystick::update();
         if (!sf::Joystick::isConnected(id))
         {
             cout << "Lost connection... Trying To Reconnect...\n";
@@ -188,34 +290,7 @@ void Controller::updateAxes()
         // Poll axis states
         // ===============================================
 
-        mouseLocalTargetPos += leftStick->state * leftStick->sensitivity * 20;
-        mouseLocalOffset = util::lerp(mouseLocalOffset, mouseLocalTargetPos, 0.75f);
-
-
-        const vec2 diff = mouseLocalTargetPos - mouseLocalOffset;
-        if (fabs(diff.x) < 0.5) accumulator.x += diff.x;
-        if (fabs(diff.y) < 0.5) accumulator.y += diff.y;
-
-        bool xTooSmall = fabs(accumulator.x) < 0.5f;
-        bool yTooSmall = fabs(accumulator.y) < 0.5f;
-
-        SetCursorPos(GetCursorPos() + diff);
-        SetCursorPos(GetCursorPos() + accumulator);
-            
-        if (!xTooSmall) accumulator.x = 0;
-        if (!yTooSmall) accumulator.y = 0;
-
-        
-        
-
-//        mouseLocalTargetPos.clip(vec2(0, 0), vec2(screenSize.x, screenSize.y));
-//        MoveCursorToPos(mouseLocalTargetPos);
-
-
-
-
-//        ScrollMouseVertical(rightStick->state.y * rightStick->sensitivity * -0.5f);
-//        ScrollMouseHorizontal(rightStick->state.x * 5);
+        controlCursor(primary, secondary);
 
         for (auto& axis : axes)
         {
@@ -226,48 +301,82 @@ void Controller::updateAxes()
 	}
 }
 
-void Controller::initializeKeyMappingsFromMappingFile(const string& filename)
+void Controller::initializeKeyMappingsFromMappingFile(unordered_map<string, string>& map, const string& filename)
 {
     // load the controller mapping
     ifstream mappingFile(filename);
-    for (std::string line; getline(mappingFile, line); )
+
+    for (std::string line; std::getline(mappingFile, line); )
     {
-        const auto tokens = util::split(util::toLower(util::removeSpaces(line)), '=');
-        const string& userButtonName = tokens[0];
-        userButtonNameToId[userButtonName] = tokens[1];
-    }
-}
-
-bool fail(bool condition, int lineNumber, const string& message)
-{
-    if (!condition)
-    {
-        cerr << "Binding Ignored... line " << lineNumber << ": " << message << "." << endl;
-        return true;
-    } 
-
-    return false;
-}
-
-// TODO: This method is a little hefty - find a way to trim it down.
-void Controller::initializeKeyBindingsFromBindingFile(const string& filename)
-{
-    // load the controller mapping
-    ifstream bindingFile(filename);
-    int lineNumber = 0;
-
-    for (std::string line; getline(bindingFile, line); )
-    {
-        lineNumber++;
-
         // skip empty lines and comments
         if (line.substr(0, 2) == "--" || line.empty()) continue;
 
-        // case insensitive
-        line = util::toLower(line);
+        const auto tokens = util::split(util::toLower(util::removeSpaces(line)), '=');
+        const string& userButtonName = tokens[0];
+        map[userButtonName] = tokens[1];
+    }
+}
 
+std::string line;
+
+void need(bool expected, const string& message, int lineNumber)
+{
+    if (!expected)
+    {
+        cerr << "Failed To Compile Bindings... line " << lineNumber << ": " << message << "." << endl;
+        cin.ignore();
+        exit(EXIT_FAILURE);
+    }
+}
+
+/* skip empty lines and comments*/
+void readToNextValidLine(ifstream& file, int& lineNumber)
+{
+    while (std::getline(file, line)) 
+    {
+        lineNumber++;
+        line = util::trim(line);
+        if (line.substr(0, 2) != "--" && !line.empty())
+        {
+            line = util::toLower(line);
+            break;
+        }
+    }
+}
+
+// TODO: This method is a little hefty - find a way to trim it down.
+void Controller::initializeKeyBindingsFromBindingFile(const string& filename, bool firstCall)
+{
+    // load the controller mapping
+    ifstream bindingFile(filename);
+    int lineNumber = 1;
+
+    readToNextValidLine(bindingFile, lineNumber); // ignore initial whitespace
+    need(line == "settings:", "Expected 'settings' at the beginning of the file", lineNumber);
+    readToNextValidLine(bindingFile, lineNumber); // read over 'settings'
+
+    // read in all of the settings
+    while (line != "bindings:")
+    {
+        const auto tokens = util::split(line, '=');
+        SettingType setting = SettingType::from(util::removeSpaces(tokens[0]));
+        need(setting.isDefined(), "Setting name '" + tokens[0] + "' is not a valid setting", lineNumber);
+
+        const string value = util::toLower(util::removeSpaces(tokens[1]));
+        settings[setting] = value;
+        readToNextValidLine(bindingFile, lineNumber);
+    }
+
+    need(line == "bindings:", "Expected 'bindings' at the end of settings", lineNumber);
+    readToNextValidLine(bindingFile, lineNumber); // read over 'bindings'
+
+    // this is a good time to do it!
+    if (firstCall) setupAxes();
+
+    while (bindingFile)
+    {
         // PART ONE, every binding should begin with 'bind'
-        if (fail(line.substr(0, 4) == "bind", lineNumber, "Expected 'bind' at the start of the line")) return;
+        need(line.substr(0, 4) == "bind", "Expected 'bind' at the start of the line", lineNumber);
 
         // skip the 'bind' directive and split up the binding groups
         const vector<string> actionBindingGroups = util::split(line.substr(5, line.length()), '+');
@@ -282,7 +391,7 @@ void Controller::initializeKeyBindingsFromBindingFile(const string& filename)
             const auto tokens = util::split(group, ' ');
             InputActionType actionType = InputActionType::from(tokens[0]);
 
-            if (fail(actionType.isDefined(), lineNumber, "'" + tokens[0] + "' is not a valid controller action")) return;
+            need(actionType.isDefined(), "'" + tokens[0] + "' is not a valid controller action", lineNumber);
 
             vector<ButtonType> actionButtons;
             for (int i = 1; i < tokens.size(); i++)
@@ -293,13 +402,14 @@ void Controller::initializeKeyBindingsFromBindingFile(const string& filename)
                 if (isPhysical)
                 {
                     buttonType = ButtonType::from("button" + userButtonNameToId[buttonString]);
+                    need(buttonType.isDefined(), "'" + buttonString + "' is not a registered controller button", lineNumber);
                 }
                 else
                 {
                     buttonType = ButtonType::from(buttonString);
+                    need(buttonType.isDefined(), "'" + buttonString + "' is not a registered controller button", lineNumber);
+                    need(buttons.count(buttonType) > 0, "'" + buttonString + "' is valid, but not detected on your controller", lineNumber);
                 }
-
-                if (fail(buttonType.isDefined(), lineNumber, "'" + buttonString + "' is not a registered controller button")) return;
 
                 actionButtons.push_back(buttonType);
             }
@@ -308,14 +418,9 @@ void Controller::initializeKeyBindingsFromBindingFile(const string& filename)
         }
 
         // PART TWO, every binding should be followed with a 'to'
-        getline(bindingFile, line);
+        readToNextValidLine(bindingFile, lineNumber);
 
-        lineNumber++;
-
-        // case insensitive
-        line = util::toLower(line);
-
-        if (fail(line.substr(0, 2) == "to", lineNumber, "Expected 'to' at the start of the line")) return;
+        need(line.substr(0, 2) == "to", "Expected 'to' at the start of the line", lineNumber);
 
         // skip the 'to' directive and split up the binding groups
         const vector<string> actionToGroups = util::split(line.substr(3, line.length()), '+');
@@ -330,7 +435,7 @@ void Controller::initializeKeyBindingsFromBindingFile(const string& filename)
             const vector<string> tokens = util::split(group, ' ');
             InputActionType actionType = InputActionType::from(tokens[0]);
 
-            if (fail(actionType.isDefined(), lineNumber, "'" + tokens[0] + "' is not a valid key action")) return;
+            need(actionType.isDefined(), "'" + tokens[0] + "' is not a valid key action", lineNumber);
 
             // associate several keys with that action type (and validate their existence)
             vector<KeyType> actionKeys;
@@ -339,32 +444,17 @@ void Controller::initializeKeyBindingsFromBindingFile(const string& filename)
                 const string& token = tokens[i];
                 KeyType keyType = KeyType::from(token);
 
-                if (fail(keyType.isDefined(), lineNumber, "'" + token + "' is not a registered key")) return;
+                need(keyType.isDefined(), "'" + token + "' is not a registered key", lineNumber);
                 actionKeys.push_back(keyType);
             }
 
             bindingTo.push_back({ actionType, actionKeys });
         }
 
+        readToNextValidLine(bindingFile, lineNumber);
 
         // add our compiled binding to the binding map.
         keyBindings.push_back(make_unique<Binding>(bindingFrom, bindingTo));
-    }
-
-}
-
-void Controller::initializeSettingsFromConfigFile(const string& filename)
-{
-
-    // load the general controller settings
-    ifstream configFile(filename);
-    for (std::string line; getline(configFile, line); )
-	{
-        auto tokens = util::split(line, '=');
-        const string setting = util::toLower(util::removeSpaces(tokens[0]));
-        const string value = util::toLower(util::removeSpaces(tokens[1]));
-
-        settings[setting] = value;
     }
 }
 
@@ -390,13 +480,12 @@ bool Controller::buttonHeldDown(const ButtonType& button)
 
 void Controller::updateBindings()
 {
-    float buttonPressAndReleaseDelay = stof(settings["button-press-and-release-time"]);
+    // typically 25-75ms.  higher values make it easier to press a controller button combo
+    float buttonPressAndReleaseDelay = 50;
 
-    
-
-	while (keepPollingThreadsAlive && isConnected())
+	while (keepBindingThreadsAlive)
 	{
-        if (buttonHeldDown(ButtonType::RightStickUp)) cout << "woo\n";
+        if (!isConnected()) continue;
 
 		// check if the bindings were pressed
 		for (auto& binding : keyBindings)
@@ -404,7 +493,14 @@ void Controller::updateBindings()
 			if (binding->triggered(this))
 			{
 				binding->runAction(this);
-			}
+
+                // combos will over-shadow individual buttons
+                if (binding->triggers.size() > 1 || binding->triggers[0].buttons.size() > 1)
+                {
+                    cout << "OVERSHADOW" << endl;
+                    break;
+                }
+            }
 		}
 
 		// let the buttons know if they were pressed this frame

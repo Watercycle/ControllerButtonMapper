@@ -31,10 +31,10 @@ void Stick::update()
         // most people suck at moving just up or down naturally, so we help them out a bit.
         const float yBias = fabs(state.y / state.x);
 
-        // e.g. if the y axis is being used 500% more than the x axis then
-        // 90% of the motion will apply to the y axis.
-        const float axialCorrectionTrigger = 5.0f;
-        const float axialBiasStrength = 0.9f;
+        // e.g. if the y axis is being used 500% (5.0f) more than the x axis then
+        // 90% (0.9f) of the motion will apply to the y axis.
+        const float axialCorrectionTrigger = 4.0f;
+        const float axialBiasStrength = 1.0f;
 
         // e.g. when one direction is being used twice as much as the other.
         if (yBias > axialCorrectionTrigger)
@@ -75,14 +75,14 @@ float Stick::getThreshold()
     return min(state.lengthSquared(), 1.0f);
 }
 
-void Stick::updateSettings(unordered_map<string, string>& settings)
+void Stick::updateSettings(unordered_map<SettingType, string>& settings)
 {
     radius = 100;
-    softThreshold = stof(settings["stick-soft"]);
-    hardThreshold = stof(settings["stick-hard"]);
-    deadzone = stof(settings[static_cast<string>(name) + "-deadzone"]);
-    usingAcceleration = settings[static_cast<string>(name) + "-using-acceleration"] == "true" ? true : false;
-    defaultSensitivity = stof(settings[static_cast<string>(name) + "-sensitivity"]);
+    softThreshold = stof(settings[SettingType::StickSoftThreshold]);
+    hardThreshold = stof(settings[SettingType::StickHardThreshold]);
+    deadzone = stof(settings[SettingType::from(static_cast<string>(name) + "Deadzone")]);
+    usingAcceleration = settings[SettingType::from(static_cast<string>(name) + "UsingAcceleration")] == "true" ? true : false;
+    defaultSensitivity = stof(settings[SettingType::from(static_cast<string>(name) + "Sensitivity")]);
     sensitivity = defaultSensitivity;
 }
 
