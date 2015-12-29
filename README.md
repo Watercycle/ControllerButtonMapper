@@ -21,7 +21,8 @@ confusing program in the first place!
 # Todo
 
 - Test more controllers
-- Add options to disable bindings and/or mouse input for certain applications
+- ~~Add options to disable bindings and/or mouse input for certain applications~~
+  'default.bind' will be used unless a binding is defined for each specific executable.
 - Windows only right now but should be easy to extend
 
 # Binding Language Example (with syntax highlighting)
